@@ -1,7 +1,6 @@
 package com.slashgil.marvel.presentation.characters
 
 import com.slashgil.marvel.domain.model.Character
-import com.slashgil.marvel.domain.model.Comic
 import com.slashgil.marvel.domain.usecase.FakeMarvelRepository
 import com.slashgil.marvel.domain.usecase.GetCharacterDetailsUseCase
 import com.slashgil.marvel.domain.usecase.GetCharactersUseCase
@@ -16,7 +15,6 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
@@ -46,12 +44,9 @@ class CharactersViewModelTest {
     fun `init loads characters successfully`() = runTest {
         val mockCharacters = listOf(
             Character(
-                id = 1009610,
+                id = "620",
                 name = "Spider-Man",
-                description = "Hero",
-                thumbnailUrl = "http://example.com/spiderman.jpg",
-                comicsAvailable = 10,
-                seriesAvailable = 5
+                imageUrl = "http://example.com/spiderman.jpg"
             )
         )
         fakeRepository.charactersResult = Result.success(mockCharacters)
@@ -71,27 +66,15 @@ class CharactersViewModelTest {
     }
 
     @Test
-    fun `onCharacterSelected fetches details and comics`() = runTest {
-        val mockCharacter = Character(
-            id = 1009610,
-            name = "Spider-Man",
-            description = "Friendly neighborhood Spider-Man",
-            thumbnailUrl = "http://example.com/spiderman.jpg",
-            comicsAvailable = 10,
-            seriesAvailable = 5
-        )
-        val mockComics = listOf(
-            Comic(
-                id = 1,
-                title = "Amazing Spider-Man #1",
-                description = "Issue 1",
-                thumbnailUrl = "http://example.com/comic1.jpg",
-                pageCount = 32
+    fun `onPublisherSelected filters character list`() = runTest {
+        val mockCharacters = listOf(
+            Character(
+                id = "620",
+                name = "Spider-Man",
+                imageUrl = "http://example.com/spiderman.jpg"
             )
         )
-        fakeRepository.charactersResult = Result.success(listOf(mockCharacter))
-        fakeRepository.characterDetailsResult = Result.success(mockCharacter)
-        fakeRepository.comicsResult = Result.success(mockComics)
+        fakeRepository.charactersResult = Result.success(mockCharacters)
 
         viewModel = CharactersViewModel(
             getCharactersUseCase,
@@ -100,41 +83,10 @@ class CharactersViewModelTest {
         )
         testDispatcher.scheduler.advanceUntilIdle()
 
-        viewModel.onCharacterSelected(mockCharacter)
+        viewModel.onPublisherSelected("DC Comics")
         testDispatcher.scheduler.advanceUntilIdle()
 
         val state = viewModel.uiState.value
-        assertEquals(mockCharacter, state.selectedCharacter)
-        assertEquals(mockComics, state.characterComics)
-        assertFalse(state.isDetailLoading)
-    }
-
-    @Test
-    fun `onDismissDetail clears selected character and comics`() = runTest {
-        val mockCharacter = Character(
-            id = 1009610,
-            name = "Spider-Man",
-            description = "Hero",
-            thumbnailUrl = "http://example.com/spiderman.jpg",
-            comicsAvailable = 10,
-            seriesAvailable = 5
-        )
-        fakeRepository.characterDetailsResult = Result.success(mockCharacter)
-
-        viewModel = CharactersViewModel(
-            getCharactersUseCase,
-            getCharacterDetailsUseCase,
-            getComicsForCharacterUseCase
-        )
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        viewModel.onCharacterSelected(mockCharacter)
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        viewModel.onDismissDetail()
-
-        val state = viewModel.uiState.value
-        assertNull(state.selectedCharacter)
-        assertTrue(state.characterComics.isEmpty())
+        assertEquals("DC Comics", state.selectedPublisher)
     }
 }

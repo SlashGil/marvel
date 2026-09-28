@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,6 +28,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -80,6 +82,7 @@ fun CharacterDetailSheet(
     isDetailLoading: Boolean,
     comics: List<Comic>,
     onDismiss: () -> Unit,
+    onPublisherClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     AnimatedVisibility(
@@ -99,23 +102,23 @@ fun CharacterDetailSheet(
                         .fillMaxSize()
                         .verticalScroll(rememberScrollState())
                 ) {
-                    // Spoke Header
+                    // Header Image
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(260.dp)
+                            .height(300.dp)
                             .background(Color(0xFF222222))
                     ) {
-                        if (character.thumbnailUrl.isNotBlank()) {
+                        if (character.imageUrl.isNotBlank()) {
                             AsyncImage(
-                                model = character.thumbnailUrl,
+                                model = character.imageUrl,
                                 contentDescription = character.name,
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier.fillMaxSize()
                             )
                         }
 
-                        // Gradient overlay for contrast
+                        // Gradient overlay
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
@@ -140,85 +143,152 @@ fun CharacterDetailSheet(
                         }
 
                         // Title in header
-                        Text(
-                            text = character.name,
-                            color = Color.White,
-                            fontSize = 28.sp,
-                            fontWeight = FontWeight.Black,
+                        Column(
                             modifier = Modifier
                                 .align(Alignment.BottomStart)
-                                .padding(16.dp)
-                        )
+                                .padding(20.dp)
+                        ) {
+                            Text(
+                                text = character.name,
+                                color = Color.White,
+                                fontSize = 32.sp,
+                                fontWeight = FontWeight.Black
+                            )
+                            if (character.biography.fullName.isNotBlank()) {
+                                Text(
+                                    text = character.biography.fullName,
+                                    color = TextSecondary,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
+                        }
                     }
 
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(3.dp)
+                            .height(4.dp)
                             .background(MarvelRed)
                     )
 
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text(
-                            text = "BIOGRAPHY",
-                            color = MarvelRed,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Bold,
-                            letterSpacing = 2.sp
-                        )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Text(
-                            text = if (character.description.isNotBlank()) {
-                                character.description
-                            } else {
-                                "No description available for ${character.name}."
-                            },
-                            color = Color.White,
-                            fontSize = 15.sp,
-                            lineHeight = 22.sp
-                        )
-
-                        Spacer(modifier = Modifier.height(24.dp))
-
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(20.dp),
+                        verticalArrangement = Arrangement.spacedBy(20.dp)
+                    ) {
+                        // Clickable Publisher Chip
                         Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             Text(
-                                text = "FEATURED COMICS (${comics.size})",
+                                text = "PUBLISHER:",
+                                color = TextSecondary,
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Surface(
+                                shape = RoundedCornerShape(16.dp),
+                                color = MarvelRed,
+                                modifier = Modifier.clickable {
+                                    onPublisherClick(character.biography.publisher)
+                                }
+                            ) {
+                                Text(
+                                    text = "${character.biography.publisher}  ➔",
+                                    color = Color.White,
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp)
+                                )
+                            }
+                        }
+
+                        // Powerstats Section
+                        Column {
+                            Text(
+                                text = "POWERSTATS",
                                 color = MarvelRed,
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold,
                                 letterSpacing = 2.sp
                             )
+                            Spacer(modifier = Modifier.height(10.dp))
+                            PowerstatsBarChart(powerstats = character.powerstats)
                         }
 
-                        Spacer(modifier = Modifier.height(12.dp))
-
-                        if (isDetailLoading) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(120.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                CircularProgressIndicator(color = MarvelRed)
-                            }
-                        } else if (comics.isEmpty()) {
+                        // Biography Details
+                        Column {
                             Text(
-                                text = "No comics found for this character.",
-                                color = TextSecondary,
-                                fontSize = 14.sp
+                                text = "BIOGRAPHY & ORIGIN",
+                                color = MarvelRed,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                letterSpacing = 2.sp
                             )
-                        } else {
-                            LazyRow(
-                                contentPadding = PaddingValues(end = 16.dp),
-                                horizontalArrangement = Arrangement.spacedBy(12.dp)
-                            ) {
-                                items(comics) { comic ->
-                                    ComicCardItem(comic = comic)
+                            Spacer(modifier = Modifier.height(8.dp))
+                            DetailRow(label = "First Appearance", value = character.biography.firstAppearance)
+                            DetailRow(label = "Place of Birth", value = character.biography.placeOfBirth)
+                            DetailRow(label = "Alignment", value = character.biography.alignment.uppercase())
+                            DetailRow(label = "Race", value = character.appearance.race)
+                        }
+
+                        // Connections & Teams
+                        if (character.connections.groupAffiliation.isNotBlank()) {
+                            Column {
+                                Text(
+                                    text = "AFFILIATIONS",
+                                    color = MarvelRed,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    letterSpacing = 2.sp
+                                )
+                                Spacer(modifier = Modifier.height(6.dp))
+                                Text(
+                                    text = character.connections.groupAffiliation,
+                                    color = Color.White,
+                                    fontSize = 14.sp,
+                                    lineHeight = 20.sp
+                                )
+                            }
+                        }
+
+                        // Featured Comics
+                        Column {
+                            Text(
+                                text = "DEBUT & COMICS",
+                                color = MarvelRed,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                letterSpacing = 2.sp
+                            )
+                            Spacer(modifier = Modifier.height(12.dp))
+
+                            if (isDetailLoading) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(120.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator(color = MarvelRed)
+                                }
+                            } else if (comics.isEmpty()) {
+                                Text(
+                                    text = "No comics found for this character.",
+                                    color = TextSecondary,
+                                    fontSize = 14.sp
+                                )
+                            } else {
+                                LazyRow(
+                                    contentPadding = PaddingValues(end = 16.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                ) {
+                                    items(comics) { comic ->
+                                        ComicCardItem(comic = comic)
+                                    }
                                 }
                             }
                         }
@@ -230,22 +300,40 @@ fun CharacterDetailSheet(
 }
 
 @Composable
+private fun DetailRow(
+    label: String,
+    value: String
+) {
+    if (value.isNotBlank()) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 3.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(text = label, color = TextSecondary, fontSize = 13.sp)
+            Text(text = value, color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+        }
+    }
+}
+
+@Composable
 fun ComicCardItem(
     comic: Comic,
     modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier
-            .width(130.dp)
-            .clip(RoundedCornerShape(6.dp)),
-        shape = RoundedCornerShape(6.dp),
+            .width(140.dp)
+            .clip(RoundedCornerShape(8.dp)),
+        shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(containerColor = BgSurface)
     ) {
         Column {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(160.dp)
+                    .height(170.dp)
                     .background(Color(0xFF222222))
             ) {
                 if (comic.thumbnailUrl.isNotBlank()) {

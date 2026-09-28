@@ -7,7 +7,7 @@ import javax.inject.Inject
 class GetCharacterDetailsUseCase @Inject constructor(
     private val repository: MarvelRepository
 ) {
-    suspend operator fun invoke(characterId: Long): Result<Character> {
+    suspend operator fun invoke(characterId: String): Result<Character> {
         return repository.getCharacterDetails(characterId)
     }
 }

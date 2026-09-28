@@ -17,17 +17,14 @@ class GetCharactersUseCaseTest {
     fun `invoke returns success result when repository succeeds`() = runTest {
         val mockCharacters = listOf(
             Character(
-                id = 1009610,
+                id = "620",
                 name = "Spider-Man",
-                description = "Bitten by a radioactive spider...",
-                thumbnailUrl = "http://i.annihil.us/u/prod/marvel/i/mg/3/50/526548a343e4b.jpg",
-                comicsAvailable = 4000,
-                seriesAvailable = 1000
+                imageUrl = "http://example.com/spiderman.jpg"
             )
         )
         fakeRepository.charactersResult = Result.success(mockCharacters)
 
-        val result = useCase(query = "Spider", limit = 20, offset = 0)
+        val result = useCase(query = "Spider", publisher = "Marvel Comics")
 
         assertTrue(result.isSuccess)
         assertEquals(mockCharacters, result.getOrNull())
@@ -38,7 +35,7 @@ class GetCharactersUseCaseTest {
         val exception = RuntimeException("Network error")
         fakeRepository.charactersResult = Result.failure(exception)
 
-        val result = useCase(query = null, limit = 20, offset = 0)
+        val result = useCase(query = null, publisher = null)
 
         assertTrue(result.isFailure)
         assertEquals(exception, result.exceptionOrNull())
@@ -50,15 +47,15 @@ class FakeMarvelRepository : MarvelRepository {
     var characterDetailsResult: Result<Character>? = null
     var comicsResult: Result<List<Comic>> = Result.success(emptyList())
 
-    override suspend fun getCharacters(query: String?, limit: Int, offset: Int): Result<List<Character>> {
+    override suspend fun getCharacters(query: String?, publisher: String?): Result<List<Character>> {
         return charactersResult
     }
 
-    override suspend fun getCharacterDetails(characterId: Long): Result<Character> {
+    override suspend fun getCharacterDetails(characterId: String): Result<Character> {
         return characterDetailsResult ?: Result.failure(NoSuchElementException())
     }
 
-    override suspend fun getComicsForCharacter(characterId: Long, limit: Int, offset: Int): Result<List<Comic>> {
+    override suspend fun getComicsForCharacter(characterId: String): Result<List<Comic>> {
         return comicsResult
     }
 }

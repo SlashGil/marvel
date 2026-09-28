@@ -15,16 +15,15 @@ class GetComicsForCharacterUseCaseTest {
     fun `invoke returns comics list when repository succeeds`() = runTest {
         val mockComics = listOf(
             Comic(
-                id = 1,
+                id = "1",
                 title = "Amazing Spider-Man #1",
                 description = "First issue",
-                thumbnailUrl = "http://i.annihil.us/u/prod/marvel/i/mg/1/10/1.jpg",
-                pageCount = 32
+                thumbnailUrl = "http://example.com/comic1.jpg"
             )
         )
         fakeRepository.comicsResult = Result.success(mockComics)
 
-        val result = useCase(characterId = 1009610, limit = 20, offset = 0)
+        val result = useCase("620")
 
         assertTrue(result.isSuccess)
         assertEquals(mockComics, result.getOrNull())

@@ -26,6 +26,7 @@ class MainActivity : ComponentActivity() {
                 CharactersScreen(
                     state = state,
                     onSearchQueryChanged = viewModel::onSearchQueryChanged,
+                    onPublisherSelected = viewModel::onPublisherSelected,
                     onCharacterSelected = viewModel::onCharacterSelected,
                     onDismissDetail = viewModel::onDismissDetail,
                     onRetry = viewModel::loadCharacters

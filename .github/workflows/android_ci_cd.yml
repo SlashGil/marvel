@@ -34,16 +34,16 @@ jobs:
         run: echo "$GOOGLE_SERVICES_JSON" > app/google-services.json
 
       - name: Run Unit Tests
-        run: ./gradlew testDebugUnitTest --stacktrace
+        run: ./gradlew testDevDebugUnitTest --stacktrace
 
-      - name: Build Debug APK
-        run: ./gradlew assembleDebug --stacktrace
+      - name: Build Dev Debug APK
+        run: ./gradlew assembleDevDebug --stacktrace
 
       - name: Upload Debug APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: marvel-debug-apk
-          path: app/build/outputs/apk/debug/app-debug.apk
+          name: marvel-dev-debug-apk
+          path: app/build/outputs/apk/dev/debug/app-dev-debug.apk
 
   deploy_firebase:
     name: Distribute to Firebase App Distribution
@@ -73,8 +73,8 @@ jobs:
         if: ${{ env.GOOGLE_SERVICES_JSON != '' }}
         run: echo "$GOOGLE_SERVICES_JSON" > app/google-services.json
 
-      - name: Build Debug APK for Distribution
-        run: ./gradlew assembleDebug
+      - name: Build Dev Debug APK for Distribution
+        run: ./gradlew assembleDevDebug
 
       - name: Upload to Firebase App Distribution
         env:
@@ -83,4 +83,4 @@ jobs:
         if: ${{ env.GCP_SA_KEY != '' }}
         uses: w9jds/firebase-action@v2.2.2
         with:
-          args: appdistribution:distribute app/build/outputs/apk/debug/app-debug.apk --app ${{ secrets.FIREBASE_APP_ID }} --groups "testers"
+          args: appdistribution:distribute app/build/outputs/apk/dev/debug/app-dev-debug.apk --app ${{ secrets.FIREBASE_APP_ID }} --groups "testers"

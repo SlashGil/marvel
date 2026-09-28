@@ -7,6 +7,8 @@ data class CharactersUiState(
     val isLoading: Boolean = false,
     val characters: List<Character> = emptyList(),
     val searchQuery: String = "",
+    val selectedPublisher: String = "All",
+    val availablePublishers: List<String> = listOf("All", "Marvel Comics", "DC Comics", "Dark Horse Comics", "George Lucas"),
     val error: String? = null,
     val selectedCharacter: Character? = null,
     val isDetailLoading: Boolean = false,

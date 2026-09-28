@@ -9,9 +9,8 @@ class GetCharactersUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(
         query: String? = null,
-        limit: Int = 20,
-        offset: Int = 0
+        publisher: String? = null
     ): Result<List<Character>> {
-        return repository.getCharacters(query = query, limit = limit, offset = offset)
+        return repository.getCharacters(query = query, publisher = publisher)
     }
 }

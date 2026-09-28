@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -25,6 +26,7 @@ import coil3.compose.AsyncImage
 import com.slashgil.marvel.domain.model.Character
 import com.slashgil.marvel.ui.theme.BgSurface
 import com.slashgil.marvel.ui.theme.MarvelRed
+import com.slashgil.marvel.ui.theme.TextSecondary
 
 @Composable
 fun CharacterCard(
@@ -35,36 +37,40 @@ fun CharacterCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(12.dp))
             .clickable(onClick = onClick),
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = BgSurface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
         Column {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(160.dp)
+                    .height(180.dp)
                     .background(Color(0xFF222222))
             ) {
-                if (character.thumbnailUrl.isNotBlank()) {
+                if (character.imageUrl.isNotBlank()) {
                     AsyncImage(
-                        model = character.thumbnailUrl,
+                        model = character.imageUrl,
                         contentDescription = character.name,
                         contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxWidth().height(160.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(180.dp)
                     )
                 } else {
                     Box(
-                        modifier = Modifier.fillMaxWidth().height(160.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(180.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = character.name.take(2).uppercase(),
                             color = Color.White,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 24.sp
+                            fontSize = 28.sp
                         )
                     }
                 }
@@ -77,16 +83,24 @@ fun CharacterCard(
                     .background(MarvelRed)
             )
 
-            Box(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(12.dp)
+                    .padding(horizontal = 14.dp, vertical = 12.dp)
             ) {
                 Text(
                     text = character.name,
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 14.sp,
+                    fontSize = 15.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = character.biography.publisher.ifBlank { "Hero" },
+                    color = TextSecondary,
+                    fontSize = 12.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )

@@ -1,7 +1,6 @@
 package com.slashgil.marvel.di
 
 import com.slashgil.marvel.data.remote.api.MarvelApi
-import com.slashgil.marvel.data.remote.interceptor.MarvelAuthInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,7 +17,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
-    private const val BASE_URL = "https://gateway.marvel.com/v1/public/"
+    private const val BASE_URL = "https://superheroapi.com/"
 
     @Provides
     @Singleton
@@ -37,7 +36,6 @@ object NetworkModule {
             level = HttpLoggingInterceptor.Level.BODY
         }
         return OkHttpClient.Builder()
-            .addInterceptor(MarvelAuthInterceptor())
             .addInterceptor(loggingInterceptor)
             .build()
     }

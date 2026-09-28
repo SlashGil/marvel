@@ -14,16 +14,13 @@ class GetCharacterDetailsUseCaseTest {
     @Test
     fun `invoke returns character details when repository succeeds`() = runTest {
         val mockCharacter = Character(
-            id = 1009610,
+            id = "620",
             name = "Spider-Man",
-            description = "Friendly neighborhood Spider-Man",
-            thumbnailUrl = "http://i.annihil.us/u/prod/marvel/i/mg/3/50/526548a343e4b.jpg",
-            comicsAvailable = 4000,
-            seriesAvailable = 1000
+            imageUrl = "http://example.com/spiderman.jpg"
         )
         fakeRepository.characterDetailsResult = Result.success(mockCharacter)
 
-        val result = useCase(1009610)
+        val result = useCase("620")
 
         assertTrue(result.isSuccess)
         assertEquals(mockCharacter, result.getOrNull())

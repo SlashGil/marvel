@@ -23,7 +23,6 @@ android {
 
     buildTypes {
         debug {
-            applicationIdSuffix = ".debug"
             isDebuggable = true
         }
         release {
@@ -32,6 +31,17 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+    }
+
+    flavorDimensions += "environment"
+    productFlavors {
+        create("dev") {
+            dimension = "environment"
+            versionNameSuffix = "-dev"
+        }
+        create("prod") {
+            dimension = "environment"
         }
     }
     compileOptions {

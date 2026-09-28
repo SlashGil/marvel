@@ -32,6 +32,7 @@ import com.slashgil.marvel.domain.model.Character
 import com.slashgil.marvel.presentation.components.CharacterCard
 import com.slashgil.marvel.presentation.components.CharacterDetailSheet
 import com.slashgil.marvel.presentation.components.MarvelHeader
+import com.slashgil.marvel.presentation.components.PublisherFilterRow
 import com.slashgil.marvel.ui.theme.BgMain
 import com.slashgil.marvel.ui.theme.BgSurface
 import com.slashgil.marvel.ui.theme.MarvelRed
@@ -41,6 +42,7 @@ import com.slashgil.marvel.ui.theme.TextSecondary
 fun CharactersScreen(
     state: CharactersUiState,
     onSearchQueryChanged: (String) -> Unit,
+    onPublisherSelected: (String) -> Unit,
     onCharacterSelected: (Character) -> Unit,
     onDismissDetail: () -> Unit,
     onRetry: () -> Unit,
@@ -57,12 +59,12 @@ fun CharactersScreen(
                 .padding(innerPadding)
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
-                // Search Bar
+                // Search Bar with outer margin
                 OutlinedTextField(
                     value = state.searchQuery,
                     onValueChange = onSearchQueryChanged,
                     placeholder = {
-                        Text("Search characters (e.g. Spider-Man)", color = TextSecondary)
+                        Text("Search characters (e.g. Spider-Man, Batman)", color = TextSecondary)
                     },
                     singleLine = true,
                     colors = OutlinedTextFieldDefaults.colors(
@@ -73,10 +75,17 @@ fun CharactersScreen(
                         focusedTextColor = Color.White,
                         unfocusedTextColor = Color.White
                     ),
-                    shape = RoundedCornerShape(8.dp),
+                    shape = RoundedCornerShape(12.dp),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 12.dp)
+                        .padding(horizontal = 20.dp, vertical = 10.dp)
+                )
+
+                // Publisher Filter Chips
+                PublisherFilterRow(
+                    publishers = state.availablePublishers,
+                    selectedPublisher = state.selectedPublisher,
+                    onPublisherSelected = onPublisherSelected
                 )
 
                 if (state.isLoading && state.characters.isEmpty()) {
@@ -110,10 +119,10 @@ fun CharactersScreen(
                     }
                 } else {
                     LazyVerticalGrid(
-                        columns = GridCells.Adaptive(minSize = 140.dp),
-                        contentPadding = PaddingValues(16.dp),
+                        columns = GridCells.Adaptive(minSize = 150.dp),
+                        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 10.dp),
                         horizontalArrangement = Arrangement.spacedBy(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(20.dp),
                         modifier = Modifier.fillMaxSize()
                     ) {
                         items(state.characters, key = { it.id }) { character ->
@@ -131,7 +140,10 @@ fun CharactersScreen(
                 character = state.selectedCharacter,
                 isDetailLoading = state.isDetailLoading,
                 comics = state.characterComics,
-                onDismiss = onDismissDetail
+                onDismiss = onDismissDetail,
+                onPublisherClick = { publisher ->
+                    onPublisherSelected(publisher)
+                }
             )
         }
     }
