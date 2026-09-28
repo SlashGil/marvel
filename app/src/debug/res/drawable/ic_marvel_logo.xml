@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="512dp"
+    android:height="512dp"
+    android:viewportWidth="512"
+    android:viewportHeight="512">
+
+    <!-- Blueprint Dark Background -->
+    <path
+        android:fillColor="#151A22"
+        android:pathData="M0,0h512v512h-512z" />
+
+    <!-- Major Technical Grid -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#253241"
+        android:strokeWidth="4"
+        android:pathData="M 0,128 L 512,128 M 0,256 L 512,256 M 0,384 L 512,384 M 128,0 L 128,512 M 256,0 L 256,512 M 384,0 L 384,512" />
+
+    <!-- Minor Technical Grid -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#1A222C"
+        android:strokeWidth="2"
+        android:pathData="M 0,64 L 512,64 M 0,192 L 512,192 M 0,320 L 512,320 M 0,448 L 512,448 M 64,0 L 64,512 M 192,0 L 192,512 M 320,0 L 320,512 M 448,0 L 448,512" />
+
+    <!-- Wireframe M -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#38BDF8"
+        android:strokeWidth="8"
+        android:pathData="M 100,380 L 100,130 L 190,130 L 256,250 L 322,130 L 412,130 L 412,380 L 342,380 L 342,220 L 276,340 L 236,340 L 170,220 L 170,380 Z" />
+
+    <!-- Dev Nodes -->
+    <path android:fillColor="#ED1D24" android:pathData="M100,130m-10,0a10,10 0 1,0 20,0a10,10 0 1,0 -20,0" />
+    <path android:fillColor="#ED1D24" android:pathData="M412,130m-10,0a10,10 0 1,0 20,0a10,10 0 1,0 -20,0" />
+    <path android:fillColor="#ED1D24" android:pathData="M256,250m-10,0a10,10 0 1,0 20,0a10,10 0 1,0 -20,0" />
+    <path android:fillColor="#ED1D24" android:pathData="M100,380m-10,0a10,10 0 1,0 20,0a10,10 0 1,0 -20,0" />
+    <path android:fillColor="#ED1D24" android:pathData="M412,380m-10,0a10,10 0 1,0 20,0a10,10 0 1,0 -20,0" />
+    <path android:fillColor="#38BDF8" android:pathData="M170,220m-8,0a8,8 0 1,0 16,0a8,8 0 1,0 -16,0" />
+    <path android:fillColor="#38BDF8" android:pathData="M342,220m-8,0a8,8 0 1,0 16,0a8,8 0 1,0 -16,0" />
+
+    <!-- Debug Construction Banner -->
+    <path android:fillColor="#FACC15" android:pathData="M 0,0 L 160,0 L 0,160 Z" />
+    <path android:fillColor="#000000" android:fillAlpha="0.8" android:pathData="M 40,0 L 80,0 L 0,80 L 0,40 Z" />
+    <path android:fillColor="#000000" android:fillAlpha="0.8" android:pathData="M 120,0 L 160,0 L 0,160 L 0,120 Z" />
+</vector>

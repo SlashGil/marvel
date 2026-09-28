@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="512dp"
+    android:height="512dp"
+    android:viewportWidth="512"
+    android:viewportHeight="512">
+
+    <!-- Background Red -->
+    <path
+        android:fillColor="#ED1D24"
+        android:pathData="M0,0h512v512h-512z" />
+
+    <!-- Inner Border -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#B01018"
+        android:strokeWidth="8"
+        android:pathData="M4,4h504v504h-504z" />
+
+    <!-- Marvel White M -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M 100,380 L 100,130 L 190,130 L 256,250 L 322,130 L 412,130 L 412,380 L 342,380 L 342,220 L 276,340 L 236,340 L 170,220 L 170,380 Z" />
+</vector>
