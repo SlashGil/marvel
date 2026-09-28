@@ -2,9 +2,9 @@ package com.slashgil.marvel.presentation.characters
 
 import com.slashgil.marvel.domain.model.Character
 import com.slashgil.marvel.domain.usecase.FakeMarvelRepository
-import com.slashgil.marvel.domain.usecase.GetCharacterDetailsUseCase
-import com.slashgil.marvel.domain.usecase.GetCharactersUseCase
-import com.slashgil.marvel.domain.usecase.GetComicsForCharacterUseCase
+import com.slashgil.marvel.domain.usecase.GetCharacterDetailsUseCaseImpl
+import com.slashgil.marvel.domain.usecase.GetCharactersUseCaseImpl
+import com.slashgil.marvel.domain.usecase.GetComicsForCharacterUseCaseImpl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -24,9 +24,9 @@ class CharactersViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
     private val fakeRepository = FakeMarvelRepository()
 
-    private val getCharactersUseCase = GetCharactersUseCase(fakeRepository)
-    private val getCharacterDetailsUseCase = GetCharacterDetailsUseCase(fakeRepository)
-    private val getComicsForCharacterUseCase = GetComicsForCharacterUseCase(fakeRepository)
+    private val getCharactersUseCase = GetCharactersUseCaseImpl(fakeRepository)
+    private val getCharacterDetailsUseCase = GetCharacterDetailsUseCaseImpl(fakeRepository)
+    private val getComicsForCharacterUseCase = GetComicsForCharacterUseCaseImpl(fakeRepository)
 
     private lateinit var viewModel: CharactersViewModel
 

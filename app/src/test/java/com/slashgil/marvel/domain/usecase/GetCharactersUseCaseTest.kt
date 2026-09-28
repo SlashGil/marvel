@@ -11,7 +11,7 @@ import org.junit.Test
 class GetCharactersUseCaseTest {
 
     private val fakeRepository = FakeMarvelRepository()
-    private val useCase = GetCharactersUseCase(fakeRepository)
+    private val useCase: GetCharactersUseCase = GetCharactersUseCaseImpl(fakeRepository)
 
     @Test
     fun `invoke returns success result when repository succeeds`() = runTest {

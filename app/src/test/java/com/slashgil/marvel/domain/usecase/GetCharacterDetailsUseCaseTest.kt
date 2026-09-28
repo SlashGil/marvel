@@ -9,7 +9,7 @@ import org.junit.Test
 class GetCharacterDetailsUseCaseTest {
 
     private val fakeRepository = FakeMarvelRepository()
-    private val useCase = GetCharacterDetailsUseCase(fakeRepository)
+    private val useCase: GetCharacterDetailsUseCase = GetCharacterDetailsUseCaseImpl(fakeRepository)
 
     @Test
     fun `invoke returns character details when repository succeeds`() = runTest {

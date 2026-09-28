@@ -1,7 +1,7 @@
 package com.slashgil.marvel.data.repository
 
+import com.slashgil.marvel.data.datasource.remote.MarvelRemoteDataSource
 import com.slashgil.marvel.data.mapper.toDomain
-import com.slashgil.marvel.data.remote.api.MarvelApi
 import com.slashgil.marvel.domain.model.Appearance
 import com.slashgil.marvel.domain.model.Biography
 import com.slashgil.marvel.domain.model.Character
@@ -13,7 +13,7 @@ import com.slashgil.marvel.domain.repository.MarvelRepository
 import javax.inject.Inject
 
 class MarvelRepositoryImpl @Inject constructor(
-    private val api: MarvelApi
+    private val remoteDataSource: MarvelRemoteDataSource
 ) : MarvelRepository {
 
     override suspend fun getCharacters(
@@ -22,7 +22,7 @@ class MarvelRepositoryImpl @Inject constructor(
     ): Result<List<Character>> {
         return runCatching {
             val q = query?.trim().orEmpty().ifEmpty { "a" }
-            val response = api.searchCharacters(q)
+            val response = remoteDataSource.searchCharacters(q)
             val networkList = response.results?.map { it.toDomain() } ?: emptyList()
 
             val combined = if (networkList.isNotEmpty()) networkList else getFallbackCharacters(query)
@@ -38,7 +38,7 @@ class MarvelRepositoryImpl @Inject constructor(
 
     override suspend fun getCharacterDetails(characterId: String): Result<Character> {
         return runCatching {
-            val dto = api.getCharacterDetails(characterId)
+            val dto = remoteDataSource.getCharacterDetails(characterId)
             if (dto.id != null) {
                 dto.toDomain()
             } else {

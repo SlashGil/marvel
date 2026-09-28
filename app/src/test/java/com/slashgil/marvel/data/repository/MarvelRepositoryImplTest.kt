@@ -1,6 +1,6 @@
 package com.slashgil.marvel.data.repository
 
-import com.slashgil.marvel.data.remote.api.MarvelApi
+import com.slashgil.marvel.data.datasource.remote.MarvelRemoteDataSource
 import com.slashgil.marvel.data.remote.dto.ImageDto
 import com.slashgil.marvel.data.remote.dto.SuperheroDto
 import com.slashgil.marvel.data.remote.dto.SuperheroSearchResponseDto
@@ -14,8 +14,8 @@ import org.junit.Test
 
 class MarvelRepositoryImplTest {
 
-    private val api: MarvelApi = mockk()
-    private val repository = MarvelRepositoryImpl(api)
+    private val remoteDataSource: MarvelRemoteDataSource = mockk()
+    private val repository = MarvelRepositoryImpl(remoteDataSource)
 
     @Test
     fun `getCharacters returns mapped domain models when api call succeeds`() = runTest {
@@ -28,14 +28,14 @@ class MarvelRepositoryImplTest {
             response = "success",
             results = listOf(heroDto)
         )
-        coEvery { api.searchCharacters("Spider") } returns response
+        coEvery { remoteDataSource.searchCharacters("Spider") } returns response
 
         val result = repository.getCharacters(query = "Spider", publisher = null)
 
         assertTrue(result.isSuccess)
         val characters = result.getOrNull()
         assertEquals("Spider-Man", characters?.first()?.name)
-        coVerify(exactly = 1) { api.searchCharacters("Spider") }
+        coVerify(exactly = 1) { remoteDataSource.searchCharacters("Spider") }
     }
 
     @Test
@@ -45,7 +45,7 @@ class MarvelRepositoryImplTest {
             name = "Spider-Man",
             image = ImageDto(url = "http://example.com/spiderman.jpg")
         )
-        coEvery { api.getCharacterDetails("620") } returns heroDto
+        coEvery { remoteDataSource.getCharacterDetails("620") } returns heroDto
 
         val result = repository.getCharacterDetails("620")
 

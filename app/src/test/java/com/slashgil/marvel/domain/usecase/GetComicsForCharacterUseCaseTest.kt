@@ -9,7 +9,7 @@ import org.junit.Test
 class GetComicsForCharacterUseCaseTest {
 
     private val fakeRepository = FakeMarvelRepository()
-    private val useCase = GetComicsForCharacterUseCase(fakeRepository)
+    private val useCase: GetComicsForCharacterUseCase = GetComicsForCharacterUseCaseImpl(fakeRepository)
 
     @Test
     fun `invoke returns comics list when repository succeeds`() = runTest {

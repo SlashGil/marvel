@@ -6,6 +6,8 @@ import com.slashgil.marvel.domain.model.Character
 import com.slashgil.marvel.domain.usecase.GetCharacterDetailsUseCase
 import com.slashgil.marvel.domain.usecase.GetCharactersUseCase
 import com.slashgil.marvel.domain.usecase.GetComicsForCharacterUseCase
+import com.slashgil.marvel.presentation.characters.contract.CharactersUiEvent
+import com.slashgil.marvel.presentation.characters.contract.CharactersUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -38,6 +40,16 @@ class CharactersViewModel @Inject constructor(
                 .collect { query ->
                     fetchCharacters(query = query, publisher = _uiState.value.selectedPublisher)
                 }
+        }
+    }
+
+    fun onEvent(event: CharactersUiEvent) {
+        when (event) {
+            is CharactersUiEvent.SearchQueryChanged -> onSearchQueryChanged(event.query)
+            is CharactersUiEvent.PublisherSelected -> onPublisherSelected(event.publisher)
+            is CharactersUiEvent.CharacterSelected -> onCharacterSelected(event.character)
+            is CharactersUiEvent.DismissDetail -> onDismissDetail()
+            is CharactersUiEvent.Retry -> loadCharacters()
         }
     }
 
