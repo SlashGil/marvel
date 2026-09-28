@@ -28,8 +28,10 @@ jobs:
         run: chmod +x gradlew
 
       - name: Create google-services.json from secret
-        if: secrets.GOOGLE_SERVICES_JSON != ''
-        run: echo "${{ secrets.GOOGLE_SERVICES_JSON }}" > app/google-services.json
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        if: ${{ env.GOOGLE_SERVICES_JSON != '' }}
+        run: echo "$GOOGLE_SERVICES_JSON" > app/google-services.json
 
       - name: Run Unit Tests
         run: ./gradlew testDebugUnitTest --stacktrace
@@ -46,7 +48,7 @@ jobs:
   deploy_firebase:
     name: Distribute to Firebase App Distribution
     needs: build_and_test
-    if: (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && secrets.FIREBASE_SERVICE_ACCOUNT_KEY != ''
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
 
     steps:
@@ -66,15 +68,19 @@ jobs:
         run: chmod +x gradlew
 
       - name: Create google-services.json from secret
-        if: secrets.GOOGLE_SERVICES_JSON != ''
-        run: echo "${{ secrets.GOOGLE_SERVICES_JSON }}" > app/google-services.json
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        if: ${{ env.GOOGLE_SERVICES_JSON != '' }}
+        run: echo "$GOOGLE_SERVICES_JSON" > app/google-services.json
 
       - name: Build Debug APK for Distribution
         run: ./gradlew assembleDebug
 
       - name: Upload to Firebase App Distribution
+        env:
+          GCP_SA_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
+          FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
+        if: ${{ env.GCP_SA_KEY != '' }}
         uses: w9jds/firebase-action@v2.2.2
         with:
           args: appdistribution:distribute app/build/outputs/apk/debug/app-debug.apk --app ${{ secrets.FIREBASE_APP_ID }} --groups "testers"
-        env:
-          GCP_SA_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
