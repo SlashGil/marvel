@@ -1,6 +1,7 @@
-package com.slashgil.marvel.data.datasource.remote
+package com.slashgil.marvel.data.remote.impl
 
 import com.slashgil.marvel.data.remote.api.MarvelApi
+import com.slashgil.marvel.data.remote.contract.MarvelRemoteDataSource
 import com.slashgil.marvel.data.remote.dto.SuperheroDto
 import com.slashgil.marvel.data.remote.dto.SuperheroSearchResponseDto
 import javax.inject.Inject

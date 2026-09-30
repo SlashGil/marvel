@@ -1,7 +1,7 @@
 package com.slashgil.marvel.di
 
-import com.slashgil.marvel.data.datasource.remote.MarvelRemoteDataSource
-import com.slashgil.marvel.data.datasource.remote.MarvelRemoteDataSourceImpl
+import com.slashgil.marvel.data.remote.contract.MarvelRemoteDataSource
+import com.slashgil.marvel.data.remote.impl.MarvelRemoteDataSourceImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group
+        android:scaleX="0.14"
+        android:scaleY="0.14"
+        android:translateX="18.1"
+        android:translateY="18.1">
+        <!-- Wireframe M -->
+        <path
+            android:fillColor="#00000000"
+            android:strokeColor="#38BDF8"
+            android:strokeWidth="10"
+            android:pathData="M 100,380 L 100,130 L 190,130 L 256,250 L 322,130 L 412,130 L 412,380 L 342,380 L 342,220 L 276,340 L 236,340 L 170,220 L 170,380 Z" />
+        <!-- Dev Nodes -->
+        <path android:fillColor="#ED1D24" android:pathData="M100,130m-12,0a12,12 0 1,0 24,0a12,12 0 1,0 -24,0" />
+        <path android:fillColor="#ED1D24" android:pathData="M412,130m-12,0a12,12 0 1,0 24,0a12,12 0 1,0 -24,0" />
+        <path android:fillColor="#ED1D24" android:pathData="M256,250m-12,0a12,12 0 1,0 24,0a12,12 0 1,0 -24,0" />
+        <path android:fillColor="#ED1D24" android:pathData="M100,380m-12,0a12,12 0 1,0 24,0a12,12 0 1,0 -24,0" />
+        <path android:fillColor="#ED1D24" android:pathData="M412,380m-12,0a12,12 0 1,0 24,0a12,12 0 1,0 -24,0" />
+    </group>
+
+    <!-- Debug Construction Banner (Corner) -->
+    <path android:fillColor="#FACC15" android:pathData="M 0,0 L 35,0 L 0,35 Z" />
+    <path android:fillColor="#000000" android:fillAlpha="0.8" android:pathData="M 8,0 L 18,0 L 0,18 L 0,8 Z" />
+    <path android:fillColor="#000000" android:fillAlpha="0.8" android:pathData="M 26,0 L 35,0 L 0,35 L 0,26 Z" />
+</vector>

@@ -1,11 +1,12 @@
-package com.slashgil.marvel.domain.usecase
+package com.slashgil.marvel.domain.impl
 
+import com.slashgil.marvel.domain.contract.GetCharactersUseCase
+import com.slashgil.marvel.data.repository.contract.MarvelRepositoryContract
 import com.slashgil.marvel.domain.model.Character
-import com.slashgil.marvel.domain.repository.MarvelRepository
 import javax.inject.Inject
 
 class GetCharactersUseCaseImpl @Inject constructor(
-    private val repository: MarvelRepository
+    private val repository: MarvelRepositoryContract
 ) : GetCharactersUseCase {
     override suspend fun invoke(
         query: String?,

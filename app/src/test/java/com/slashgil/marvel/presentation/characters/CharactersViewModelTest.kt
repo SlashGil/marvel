@@ -1,10 +1,10 @@
 package com.slashgil.marvel.presentation.characters
 
+import com.slashgil.marvel.domain.impl.GetCharacterDetailsUseCaseImpl
+import com.slashgil.marvel.domain.impl.GetCharactersUseCaseImpl
 import com.slashgil.marvel.domain.model.Character
 import com.slashgil.marvel.domain.usecase.FakeMarvelRepository
-import com.slashgil.marvel.domain.usecase.GetCharacterDetailsUseCaseImpl
-import com.slashgil.marvel.domain.usecase.GetCharactersUseCaseImpl
-import com.slashgil.marvel.domain.usecase.GetComicsForCharacterUseCaseImpl
+import com.slashgil.marvel.presentation.characters.impl.CharactersViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -26,7 +26,6 @@ class CharactersViewModelTest {
 
     private val getCharactersUseCase = GetCharactersUseCaseImpl(fakeRepository)
     private val getCharacterDetailsUseCase = GetCharacterDetailsUseCaseImpl(fakeRepository)
-    private val getComicsForCharacterUseCase = GetComicsForCharacterUseCaseImpl(fakeRepository)
 
     private lateinit var viewModel: CharactersViewModel
 
@@ -53,8 +52,7 @@ class CharactersViewModelTest {
 
         viewModel = CharactersViewModel(
             getCharactersUseCase,
-            getCharacterDetailsUseCase,
-            getComicsForCharacterUseCase
+            getCharacterDetailsUseCase
         )
 
         testDispatcher.scheduler.advanceUntilIdle()
@@ -78,8 +76,7 @@ class CharactersViewModelTest {
 
         viewModel = CharactersViewModel(
             getCharactersUseCase,
-            getCharacterDetailsUseCase,
-            getComicsForCharacterUseCase
+            getCharacterDetailsUseCase
         )
         testDispatcher.scheduler.advanceUntilIdle()
 

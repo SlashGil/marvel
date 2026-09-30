@@ -1,48 +1,77 @@
-package com.slashgil.marvel.data.repository
+package com.slashgil.marvel.data.repository.impl
 
-import com.slashgil.marvel.data.datasource.remote.MarvelRemoteDataSource
+import com.slashgil.marvel.data.local.contract.MarvelLocalDataSource
 import com.slashgil.marvel.data.mapper.toDomain
+import com.slashgil.marvel.data.remote.contract.MarvelRemoteDataSource
+import com.slashgil.marvel.data.repository.contract.MarvelRepositoryContract
 import com.slashgil.marvel.domain.model.Appearance
 import com.slashgil.marvel.domain.model.Biography
 import com.slashgil.marvel.domain.model.Character
-import com.slashgil.marvel.domain.model.Comic
 import com.slashgil.marvel.domain.model.Connections
 import com.slashgil.marvel.domain.model.Powerstats
 import com.slashgil.marvel.domain.model.Work
-import com.slashgil.marvel.domain.repository.MarvelRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class MarvelRepositoryImpl @Inject constructor(
-    private val remoteDataSource: MarvelRemoteDataSource
-) : MarvelRepository {
+    private val remoteDataSource: MarvelRemoteDataSource,
+    private val localDataSource: MarvelLocalDataSource
+) : MarvelRepositoryContract {
 
     override suspend fun getCharacters(
         query: String?,
         publisher: String?
-    ): Result<List<Character>> {
-        return runCatching {
-            val q = query?.trim().orEmpty().ifEmpty { "a" }
-            val response = remoteDataSource.searchCharacters(q)
-            val networkList = response.results?.map { it.toDomain() } ?: emptyList()
+    ): Result<List<Character>> = withContext(Dispatchers.IO) {
+        runCatching {
+            val q = query?.trim().orEmpty()
+            val pub = publisher?.trim().orEmpty()
 
-            val combined = if (networkList.isNotEmpty()) networkList else getFallbackCharacters(query)
-            filterByPublisher(combined, publisher)
+            // Check local Room database first
+            val localList = localDataSource.searchCharacters(q, pub)
+
+            if (localList.isNotEmpty()) {
+                localList
+            } else {
+                // Fetch from remote API if local cache is empty for this query
+                val searchQ = q.ifEmpty { "a" }
+                val response = remoteDataSource.searchCharacters(searchQ)
+                val networkList = response.results?.map { it.toDomain() } ?: emptyList()
+
+                if (networkList.isNotEmpty()) {
+                    localDataSource.saveCharacters(networkList)
+                    localDataSource.searchCharacters(q, pub)
+                } else {
+                    // Seed fallback sample characters into local DB if remote returns empty
+                    val sampleFiltered = filterByPublisher(getFallbackCharacters(q), pub)
+                    localDataSource.saveCharacters(sampleFiltered)
+                    sampleFiltered
+                }
+            }
         }.fold(
             onSuccess = { Result.success(it) },
             onFailure = {
+                // Fallback to whatever local data or samples exist
                 val fallback = filterByPublisher(getFallbackCharacters(query), publisher)
                 Result.success(fallback)
             }
         )
     }
 
-    override suspend fun getCharacterDetails(characterId: String): Result<Character> {
-        return runCatching {
-            val dto = remoteDataSource.getCharacterDetails(characterId)
-            if (dto.id != null) {
-                dto.toDomain()
+    override suspend fun getCharacterDetails(characterId: String): Result<Character> = withContext(Dispatchers.IO) {
+        runCatching {
+            val localChar = localDataSource.getCharacterById(characterId)
+            if (localChar != null && localChar.biography.fullName.isNotBlank()) {
+                localChar
             } else {
-                sampleCharacters.find { it.id == characterId } ?: sampleCharacters.first()
+                val dto = remoteDataSource.getCharacterDetails(characterId)
+                if (dto.id != null) {
+                    val domainChar = dto.toDomain()
+                    localDataSource.saveCharacters(listOf(domainChar))
+                    domainChar
+                } else {
+                    sampleCharacters.find { it.id == characterId } ?: sampleCharacters.first()
+                }
             }
         }.fold(
             onSuccess = { Result.success(it) },
@@ -51,24 +80,6 @@ class MarvelRepositoryImpl @Inject constructor(
                 Result.success(fallback)
             }
         )
-    }
-
-    override suspend fun getComicsForCharacter(characterId: String): Result<List<Comic>> {
-        val character = sampleCharacters.find { it.id == characterId }
-        val comics = if (character != null) {
-            listOf(
-                Comic(
-                    id = "${characterId}_1",
-                    title = character.biography.firstAppearance.ifBlank { "First Appearance #${character.name}" },
-                    description = "First debut issue featuring ${character.name}",
-                    thumbnailUrl = character.imageUrl,
-                    publisher = character.biography.publisher
-                )
-            )
-        } else {
-            sampleComics
-        }
-        return Result.success(comics)
     }
 
     private fun filterByPublisher(list: List<Character>, publisher: String?): List<Character> {
@@ -95,7 +106,7 @@ class MarvelRepositoryImpl @Inject constructor(
             Character(
                 id = "620",
                 name = "Spider-Man",
-                imageUrl = "https://www.superherodb.com/pictures2/portraits/10/100/133.jpg",
+                imageUrl = "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/620-spider-man.jpg",
                 powerstats = Powerstats(intelligence = 90, strength = 55, speed = 67, durability = 75, power = 74, combat = 85),
                 biography = Biography(
                     fullName = "Peter Parker",
@@ -113,7 +124,7 @@ class MarvelRepositoryImpl @Inject constructor(
             Character(
                 id = "346",
                 name = "Iron Man",
-                imageUrl = "https://www.superherodb.com/pictures2/portraits/10/100/85.jpg",
+                imageUrl = "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/346-iron-man.jpg",
                 powerstats = Powerstats(intelligence = 100, strength = 85, speed = 58, durability = 85, power = 100, combat = 64),
                 biography = Biography(
                     fullName = "Tony Stark",
@@ -131,7 +142,7 @@ class MarvelRepositoryImpl @Inject constructor(
             Character(
                 id = "70",
                 name = "Batman",
-                imageUrl = "https://www.superherodb.com/pictures2/portraits/10/100/639.jpg",
+                imageUrl = "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/70-batman.jpg",
                 powerstats = Powerstats(intelligence = 100, strength = 26, speed = 27, durability = 50, power = 47, combat = 100),
                 biography = Biography(
                     fullName = "Bruce Wayne",
@@ -149,7 +160,7 @@ class MarvelRepositoryImpl @Inject constructor(
             Character(
                 id = "644",
                 name = "Superman",
-                imageUrl = "https://www.superherodb.com/pictures2/portraits/10/100/791.jpg",
+                imageUrl = "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/644-superman.jpg",
                 powerstats = Powerstats(intelligence = 94, strength = 100, speed = 100, durability = 100, power = 100, combat = 85),
                 biography = Biography(
                     fullName = "Clark Kent (Kal-El)",
@@ -167,7 +178,7 @@ class MarvelRepositoryImpl @Inject constructor(
             Character(
                 id = "149",
                 name = "Captain America",
-                imageUrl = "https://www.superherodb.com/pictures2/portraits/10/100/274.jpg",
+                imageUrl = "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/149-captain-america.jpg",
                 powerstats = Powerstats(intelligence = 69, strength = 19, speed = 38, durability = 55, power = 60, combat = 100),
                 biography = Biography(
                     fullName = "Steve Rogers",
@@ -185,7 +196,7 @@ class MarvelRepositoryImpl @Inject constructor(
             Character(
                 id = "659",
                 name = "Thor",
-                imageUrl = "https://www.superherodb.com/pictures2/portraits/10/100/140.jpg",
+                imageUrl = "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/659-thor.jpg",
                 powerstats = Powerstats(intelligence = 69, strength = 100, speed = 83, durability = 100, power = 100, combat = 100),
                 biography = Biography(
                     fullName = "Thor Odinson",
@@ -199,30 +210,6 @@ class MarvelRepositoryImpl @Inject constructor(
                 appearance = Appearance(gender = "Male", race = "Asgardian", height = "6'6, 198 cm", weight = "640 lb, 288 kg", eyeColor = "Blue", hairColor = "Blond"),
                 work = Work(occupation = "King of Asgard, Avenger", base = "Asgard, New York"),
                 connections = Connections(groupAffiliation = "Avengers, Gods of Asgard", relatives = "Odin (father), Frigga (mother), Loki (adopted brother)")
-            )
-        )
-
-        val sampleComics = listOf(
-            Comic(
-                id = "1",
-                title = "Amazing Fantasy #15",
-                description = "First appearance of Spider-Man!",
-                thumbnailUrl = "https://www.superherodb.com/pictures2/portraits/10/100/133.jpg",
-                publisher = "Marvel Comics"
-            ),
-            Comic(
-                id = "2",
-                title = "Detective Comics #27",
-                description = "First appearance of Batman!",
-                thumbnailUrl = "https://www.superherodb.com/pictures2/portraits/10/100/639.jpg",
-                publisher = "DC Comics"
-            ),
-            Comic(
-                id = "3",
-                title = "Action Comics #1",
-                description = "First appearance of Superman!",
-                thumbnailUrl = "https://www.superherodb.com/pictures2/portraits/10/100/791.jpg",
-                publisher = "DC Comics"
             )
         )
     }

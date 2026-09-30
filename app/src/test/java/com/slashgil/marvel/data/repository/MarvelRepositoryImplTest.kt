@@ -1,9 +1,12 @@
 package com.slashgil.marvel.data.repository
 
-import com.slashgil.marvel.data.datasource.remote.MarvelRemoteDataSource
+import com.slashgil.marvel.data.local.contract.MarvelLocalDataSource
+import com.slashgil.marvel.data.remote.contract.MarvelRemoteDataSource
+import com.slashgil.marvel.data.repository.impl.MarvelRepositoryImpl
 import com.slashgil.marvel.data.remote.dto.ImageDto
 import com.slashgil.marvel.data.remote.dto.SuperheroDto
 import com.slashgil.marvel.data.remote.dto.SuperheroSearchResponseDto
+import com.slashgil.marvel.domain.model.Character
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -15,7 +18,8 @@ import org.junit.Test
 class MarvelRepositoryImplTest {
 
     private val remoteDataSource: MarvelRemoteDataSource = mockk()
-    private val repository = MarvelRepositoryImpl(remoteDataSource)
+    private val localDataSource: MarvelLocalDataSource = mockk(relaxed = true)
+    private val repository = MarvelRepositoryImpl(remoteDataSource, localDataSource)
 
     @Test
     fun `getCharacters returns mapped domain models when api call succeeds`() = runTest {
@@ -28,6 +32,9 @@ class MarvelRepositoryImplTest {
             response = "success",
             results = listOf(heroDto)
         )
+        val domainHero = Character(id = "620", name = "Spider-Man", imageUrl = "http://example.com/spiderman.jpg")
+
+        coEvery { localDataSource.searchCharacters("Spider", "") } returnsMany listOf(emptyList(), listOf(domainHero))
         coEvery { remoteDataSource.searchCharacters("Spider") } returns response
 
         val result = repository.getCharacters(query = "Spider", publisher = null)
@@ -45,6 +52,7 @@ class MarvelRepositoryImplTest {
             name = "Spider-Man",
             image = ImageDto(url = "http://example.com/spiderman.jpg")
         )
+        coEvery { localDataSource.getCharacterById("620") } returns null
         coEvery { remoteDataSource.getCharacterDetails("620") } returns heroDto
 
         val result = repository.getCharacterDetails("620")

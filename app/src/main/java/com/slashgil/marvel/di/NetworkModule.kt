@@ -11,13 +11,15 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
-    private const val BASE_URL = "https://superheroapi.com/"
+    private const val ACCESS_TOKEN = "c2242a8ba90dc3677b35cc19860bce66"
+    private const val BASE_URL = "https://superheroapi.com/api/$ACCESS_TOKEN/"
 
     @Provides
     @Singleton
@@ -36,6 +38,9 @@ object NetworkModule {
             level = HttpLoggingInterceptor.Level.BODY
         }
         return OkHttpClient.Builder()
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(15, TimeUnit.SECONDS)
+            .writeTimeout(15, TimeUnit.SECONDS)
             .addInterceptor(loggingInterceptor)
             .build()
     }

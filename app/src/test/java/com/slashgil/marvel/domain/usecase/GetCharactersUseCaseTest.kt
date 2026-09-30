@@ -1,8 +1,9 @@
 package com.slashgil.marvel.domain.usecase
 
+import com.slashgil.marvel.domain.contract.GetCharactersUseCase
+import com.slashgil.marvel.data.repository.contract.MarvelRepositoryContract
+import com.slashgil.marvel.domain.impl.GetCharactersUseCaseImpl
 import com.slashgil.marvel.domain.model.Character
-import com.slashgil.marvel.domain.model.Comic
-import com.slashgil.marvel.domain.repository.MarvelRepository
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -42,10 +43,9 @@ class GetCharactersUseCaseTest {
     }
 }
 
-class FakeMarvelRepository : MarvelRepository {
+class FakeMarvelRepository : MarvelRepositoryContract {
     var charactersResult: Result<List<Character>> = Result.success(emptyList())
     var characterDetailsResult: Result<Character>? = null
-    var comicsResult: Result<List<Comic>> = Result.success(emptyList())
 
     override suspend fun getCharacters(query: String?, publisher: String?): Result<List<Character>> {
         return charactersResult
@@ -53,9 +53,5 @@ class FakeMarvelRepository : MarvelRepository {
 
     override suspend fun getCharacterDetails(characterId: String): Result<Character> {
         return characterDetailsResult ?: Result.failure(NoSuchElementException())
-    }
-
-    override suspend fun getComicsForCharacter(characterId: String): Result<List<Comic>> {
-        return comicsResult
     }
 }

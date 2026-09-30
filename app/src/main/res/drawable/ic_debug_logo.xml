@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="512dp"
+    android:height="512dp"
+    android:viewportWidth="512"
+    android:viewportHeight="512">
+
+    <!-- Dark Tech Hexagon Background -->
+    <path
+        android:fillColor="#121824"
+        android:pathData="M256,16 L480,128 L480,384 L256,496 L32,384 L32,128 Z" />
+
+    <!-- Cyan Outer Glow Border -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#00E5FF"
+        android:strokeWidth="12"
+        android:pathData="M256,24 L470,132 L470,380 L256,488 L42,380 L42,132 Z" />
+
+    <!-- Bug / Debug Icon Body -->
+    <path
+        android:fillColor="#00E5FF"
+        android:pathData="M256,160 C210,160 190,190 190,230 L190,320 C190,360 220,380 256,380 C292,380 322,360 322,320 L322,230 C322,190 302,160 256,160 Z" />
+
+    <!-- Head -->
+    <path
+        android:fillColor="#FFD600"
+        android:pathData="M256,120 C226,120 210,140 210,150 L302,150 C302,140 286,120 256,120 Z" />
+
+    <!-- Antennae -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFD600"
+        android:strokeWidth="8"
+        android:strokeLineCap="round"
+        android:pathData="M220,130 L180,90 M292,130 L332,90" />
+
+    <!-- Legs -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#00E5FF"
+        android:strokeWidth="8"
+        android:strokeLineCap="round"
+        android:pathData="M190,220 L130,200 M322,220 L382,200 M190,270 L120,270 M322,270 L392,270 M190,320 L130,340 M322,320 L382,340" />
+
+    <!-- DEV Badge Overlay -->
+    <path
+        android:fillColor="#FF2D55"
+        android:pathData="M150,400 L362,400 L342,460 L170,460 Z" />
+
+    <!-- "DEV" Text Lines (Vector representation) -->
+    <!-- D -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M190,415 H210 C220,415 225,420 225,430 C225,440 220,445 210,445 H190 Z M198,422 V438 H208 C213,438 217,435 217,430 C217,425 213,422 208,422 Z" />
+    <!-- E -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M235,415 H255 V422 H243 V426 H253 V433 H243 V438 H255 V445 H235 Z" />
+    <!-- V -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M265,415 L275,445 H283 L293,415 H284 L279,434 L274,415 Z" />
+</vector>

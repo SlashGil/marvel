@@ -1,5 +1,7 @@
 package com.slashgil.marvel.domain.usecase
 
+import com.slashgil.marvel.domain.contract.GetCharacterDetailsUseCase
+import com.slashgil.marvel.domain.impl.GetCharacterDetailsUseCaseImpl
 import com.slashgil.marvel.domain.model.Character
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals

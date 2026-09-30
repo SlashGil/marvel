@@ -1,4 +1,4 @@
-package com.slashgil.marvel.domain.usecase
+package com.slashgil.marvel.domain.contract
 
 import com.slashgil.marvel.domain.model.Character
 

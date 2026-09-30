@@ -29,6 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.slashgil.marvel.domain.model.Character
+import com.slashgil.marvel.presentation.characters.contract.CharactersUiState
 import com.slashgil.marvel.presentation.components.CharacterCard
 import com.slashgil.marvel.presentation.components.CharacterDetailSheet
 import com.slashgil.marvel.presentation.components.MarvelHeader
@@ -135,11 +136,10 @@ fun CharactersScreen(
                 }
             }
 
-            // Character Detail Spoke View overlay
+            // Character Detail View overlay
             CharacterDetailSheet(
                 character = state.selectedCharacter,
                 isDetailLoading = state.isDetailLoading,
-                comics = state.characterComics,
                 onDismiss = onDismissDetail,
                 onPublisherClick = { publisher ->
                     onPublisherSelected(publisher)

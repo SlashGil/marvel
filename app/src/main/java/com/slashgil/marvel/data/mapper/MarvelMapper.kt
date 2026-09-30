@@ -9,10 +9,12 @@ import com.slashgil.marvel.domain.model.Powerstats
 import com.slashgil.marvel.domain.model.Work
 
 fun SuperheroDto.toDomain(): Character {
+    val charId = id.orEmpty()
+    val charName = name.orEmpty()
     return Character(
-        id = id.orEmpty(),
-        name = name.orEmpty(),
-        imageUrl = image?.url.orEmpty(),
+        id = charId,
+        name = charName,
+        imageUrl = resolveImageUrl(charId, charName, image?.url, size = "md"),
         powerstats = Powerstats(
             intelligence = powerstats?.intelligence?.toIntOrNull() ?: 0,
             strength = powerstats?.strength?.toIntOrNull() ?: 0,
@@ -47,4 +49,18 @@ fun SuperheroDto.toDomain(): Character {
             relatives = connections?.relatives.orEmpty()
         )
     )
+}
+
+fun resolveImageUrl(id: String, name: String, rawUrl: String?, size: String = "md"): String {
+    val cleanUrl = rawUrl?.trim().orEmpty()
+    if (cleanUrl.contains("superherodb.com", ignoreCase = true) || cleanUrl.isBlank()) {
+        val slug = name.lowercase()
+            .replace(" ", "-")
+            .replace(Regex("[^a-z0-9-]"), "")
+            .trim('-')
+        if (id.isNotBlank() && slug.isNotBlank()) {
+            return "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/$size/$id-$slug.jpg"
+        }
+    }
+    return cleanUrl.replace("http://", "https://")
 }

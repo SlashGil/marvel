@@ -7,17 +7,13 @@ import retrofit2.http.Path
 
 interface MarvelApi {
 
-    @GET("api/$ACCESS_TOKEN/search/{name}")
+    @GET("search/{name}")
     suspend fun searchCharacters(
         @Path("name") name: String
     ): SuperheroSearchResponseDto
 
-    @GET("api/$ACCESS_TOKEN/{id}")
+    @GET("{id}")
     suspend fun getCharacterDetails(
         @Path("id") id: String
     ): SuperheroDto
-
-    companion object {
-        const val ACCESS_TOKEN = "c2242a8ba90dc3677b35cc19860bce66"
-    }
 }

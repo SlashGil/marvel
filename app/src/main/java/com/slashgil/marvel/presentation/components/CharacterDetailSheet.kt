@@ -8,7 +8,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,16 +15,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
@@ -40,14 +33,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.PathNode
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.slashgil.marvel.domain.model.Character
-import com.slashgil.marvel.domain.model.Comic
 import com.slashgil.marvel.ui.theme.BgMain
-import com.slashgil.marvel.ui.theme.BgSurface
 import com.slashgil.marvel.ui.theme.MarvelRed
 import com.slashgil.marvel.ui.theme.TextSecondary
 
@@ -80,7 +70,6 @@ private val ArrowBackIcon: ImageVector
 fun CharacterDetailSheet(
     character: Character?,
     isDetailLoading: Boolean,
-    comics: List<Comic>,
     onDismiss: () -> Unit,
     onPublisherClick: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -111,7 +100,7 @@ fun CharacterDetailSheet(
                     ) {
                         if (character.imageUrl.isNotBlank()) {
                             AsyncImage(
-                                model = character.imageUrl,
+                                model = character.imageUrl.replace("/md/", "/lg/"),
                                 contentDescription = character.name,
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier.fillMaxSize()
@@ -254,44 +243,6 @@ fun CharacterDetailSheet(
                                 )
                             }
                         }
-
-                        // Featured Comics
-                        Column {
-                            Text(
-                                text = "DEBUT & COMICS",
-                                color = MarvelRed,
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Bold,
-                                letterSpacing = 2.sp
-                            )
-                            Spacer(modifier = Modifier.height(12.dp))
-
-                            if (isDetailLoading) {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(120.dp),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    CircularProgressIndicator(color = MarvelRed)
-                                }
-                            } else if (comics.isEmpty()) {
-                                Text(
-                                    text = "No comics found for this character.",
-                                    color = TextSecondary,
-                                    fontSize = 14.sp
-                                )
-                            } else {
-                                LazyRow(
-                                    contentPadding = PaddingValues(end = 16.dp),
-                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                                ) {
-                                    items(comics) { comic ->
-                                        ComicCardItem(comic = comic)
-                                    }
-                                }
-                            }
-                        }
                     }
                 }
             }
@@ -313,53 +264,6 @@ private fun DetailRow(
         ) {
             Text(text = label, color = TextSecondary, fontSize = 13.sp)
             Text(text = value, color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
-        }
-    }
-}
-
-@Composable
-fun ComicCardItem(
-    comic: Comic,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        modifier = modifier
-            .width(140.dp)
-            .clip(RoundedCornerShape(8.dp)),
-        shape = RoundedCornerShape(8.dp),
-        colors = CardDefaults.cardColors(containerColor = BgSurface)
-    ) {
-        Column {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(170.dp)
-                    .background(Color(0xFF222222))
-            ) {
-                if (comic.thumbnailUrl.isNotBlank()) {
-                    AsyncImage(
-                        model = comic.thumbnailUrl,
-                        contentDescription = comic.title,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
-            }
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(2.dp)
-                    .background(MarvelRed)
-            )
-            Text(
-                text = comic.title,
-                color = Color.White,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Bold,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.padding(8.dp)
-            )
         }
     }
 }

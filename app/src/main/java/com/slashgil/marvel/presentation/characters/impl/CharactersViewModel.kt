@@ -1,11 +1,10 @@
-package com.slashgil.marvel.presentation.characters
+package com.slashgil.marvel.presentation.characters.impl
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.slashgil.marvel.domain.contract.GetCharacterDetailsUseCase
+import com.slashgil.marvel.domain.contract.GetCharactersUseCase
 import com.slashgil.marvel.domain.model.Character
-import com.slashgil.marvel.domain.usecase.GetCharacterDetailsUseCase
-import com.slashgil.marvel.domain.usecase.GetCharactersUseCase
-import com.slashgil.marvel.domain.usecase.GetComicsForCharacterUseCase
 import com.slashgil.marvel.presentation.characters.contract.CharactersUiEvent
 import com.slashgil.marvel.presentation.characters.contract.CharactersUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,13 +16,13 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(FlowPreview::class)
 @HiltViewModel
 class CharactersViewModel @Inject constructor(
     private val getCharactersUseCase: GetCharactersUseCase,
-    private val getCharacterDetailsUseCase: GetCharacterDetailsUseCase,
-    private val getComicsForCharacterUseCase: GetComicsForCharacterUseCase
+    private val getCharacterDetailsUseCase: GetCharacterDetailsUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CharactersUiState())
@@ -36,7 +35,7 @@ class CharactersViewModel @Inject constructor(
 
         viewModelScope.launch {
             searchQueryFlow
-                .debounce(300)
+                .debounce(300.milliseconds)
                 .collect { query ->
                     fetchCharacters(query = query, publisher = _uiState.value.selectedPublisher)
                 }
@@ -97,21 +96,16 @@ class CharactersViewModel @Inject constructor(
         _uiState.update {
             it.copy(
                 selectedCharacter = character,
-                isDetailLoading = true,
-                characterComics = emptyList()
+                isDetailLoading = true
             )
         }
         viewModelScope.launch {
             val detailsResult = getCharacterDetailsUseCase(character.id)
-            val comicsResult = getComicsForCharacterUseCase(character.id)
-
             val updatedCharacter = detailsResult.getOrDefault(character)
-            val comicsList = comicsResult.getOrDefault(emptyList())
 
             _uiState.update {
                 it.copy(
                     selectedCharacter = updatedCharacter,
-                    characterComics = comicsList,
                     isDetailLoading = false
                 )
             }
@@ -122,8 +116,7 @@ class CharactersViewModel @Inject constructor(
         _uiState.update {
             it.copy(
                 selectedCharacter = null,
-                isDetailLoading = false,
-                characterComics = emptyList()
+                isDetailLoading = false
             )
         }
     }

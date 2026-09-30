@@ -1,36 +1,28 @@
 package com.slashgil.marvel.di
 
-import com.slashgil.marvel.domain.usecase.GetCharacterDetailsUseCase
-import com.slashgil.marvel.domain.usecase.GetCharacterDetailsUseCaseImpl
-import com.slashgil.marvel.domain.usecase.GetCharactersUseCase
-import com.slashgil.marvel.domain.usecase.GetCharactersUseCaseImpl
-import com.slashgil.marvel.domain.usecase.GetComicsForCharacterUseCase
-import com.slashgil.marvel.domain.usecase.GetComicsForCharacterUseCaseImpl
+import com.slashgil.marvel.domain.contract.GetCharacterDetailsUseCase
+import com.slashgil.marvel.domain.contract.GetCharactersUseCase
+import com.slashgil.marvel.domain.impl.GetCharacterDetailsUseCaseImpl
+import com.slashgil.marvel.domain.impl.GetCharactersUseCaseImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ViewModelComponent
-import dagger.hilt.android.scopes.ViewModelScoped
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
 @Module
-@InstallIn(ViewModelComponent::class)
+@InstallIn(SingletonComponent::class)
 abstract class UseCaseModule {
 
     @Binds
-    @ViewModelScoped
+    @Singleton
     abstract fun bindGetCharactersUseCase(
         impl: GetCharactersUseCaseImpl
     ): GetCharactersUseCase
 
     @Binds
-    @ViewModelScoped
+    @Singleton
     abstract fun bindGetCharacterDetailsUseCase(
         impl: GetCharacterDetailsUseCaseImpl
     ): GetCharacterDetailsUseCase
-
-    @Binds
-    @ViewModelScoped
-    abstract fun bindGetComicsForCharacterUseCase(
-        impl: GetComicsForCharacterUseCaseImpl
-    ): GetComicsForCharacterUseCase
 }
